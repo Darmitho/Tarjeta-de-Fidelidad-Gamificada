@@ -39,4 +39,12 @@ public class ClienteTest {
         assertEquals(0, cliente.getStreakDias());
     }
 
+    @Test
+    public void clienteToStringDebeMostrarInformacionLegible() {
+        Cliente cliente = new Cliente("123", "Daniel", "daniel@email.com");
+
+        String esperado = "Cliente{id='123', nombre='Daniel', correo='daniel@email.com', puntos=0, nivel=BRONCE, streakDias=0}";
+        assertEquals(esperado, cliente.toString());
+    }
+    
 }
