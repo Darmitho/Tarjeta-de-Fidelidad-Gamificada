@@ -29,11 +29,18 @@ public class CompraRepository {
     }
 
     public void actualizar(Compra compra) {
-    for (int i = 0; i < compras.size(); i++) {
-        if (compras.get(i).getIdCompra().equals(compra.getIdCompra())) {
-            compras.set(i, compra);
-            return;
+        if (compra == null) {
+            throw new IllegalArgumentException("La compra no puede ser null");
         }
+
+        for (int i = 0; i < compras.size(); i++) {
+            if (compras.get(i).getIdCompra().equals(compra.getIdCompra())) {
+                compras.set(i, compra);
+                return;
+            }
+        }
+
+        throw new IllegalArgumentException("La compra no existe y no puede ser actualizada");
     }
-}
+
 }
