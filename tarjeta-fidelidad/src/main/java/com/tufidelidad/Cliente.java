@@ -111,22 +111,19 @@ public class Cliente {
     }
 
     private void actualizarStreak(Compra compraReciente) {
+        this.streakDias = calcularStreakDesde(compraReciente.getFecha().toLocalDate());
+    }
+
+    private int calcularStreakDesde(LocalDate referencia) {
         Set<LocalDate> diasCompra = historialCompras.stream()
             .map(compra -> compra.getFecha().toLocalDate())
             .collect(Collectors.toSet());
 
-        if (diasCompra.isEmpty()) {
-            streakDias = 0;
-            return;
-        }
-
-        LocalDate hoy = compraReciente.getFecha().toLocalDate();
         int racha = 0;
-
-        while (diasCompra.contains(hoy.minusDays(racha))) {
+        while (diasCompra.contains(referencia.minusDays(racha))) {
             racha++;
         }
 
-        this.streakDias = racha;
+        return racha;
     }
 }

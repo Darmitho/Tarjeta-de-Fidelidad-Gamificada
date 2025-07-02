@@ -96,4 +96,16 @@ public class ClienteTest {
 
         assertEquals(3, cliente.getStreakDias());
     }
+
+    @Test
+    void actualizarStreak_seCortaSiHayUnDiaFaltante() {
+        Cliente cliente = new Cliente("CL1", "María", "maria@mail.com");
+
+        // Compra días 1 y 3, falta el día 2 => streak = 1 (por el día 3 solamente)
+        cliente.agregarCompra(new Compra("C1", "CL1", 150, LocalDateTime.of(2025, 7, 1, 9, 0)));
+        cliente.agregarCompra(new Compra("C2", "CL1", 200, LocalDateTime.of(2025, 7, 3, 10, 0)));
+
+        assertEquals(1, cliente.getStreakDias());
+    }
+
 }
