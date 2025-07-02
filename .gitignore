@@ -1,0 +1,5 @@
+# Ignorar configuración local de VS Code
+.vscode/
+
+# Ignorar carpeta de salida de Maven
+/target/
