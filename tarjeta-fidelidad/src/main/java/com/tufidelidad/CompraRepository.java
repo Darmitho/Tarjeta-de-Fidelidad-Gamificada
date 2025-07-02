@@ -43,4 +43,8 @@ public class CompraRepository {
         throw new IllegalArgumentException("La compra no existe y no puede ser actualizada");
     }
 
+    public void eliminar(String idCompra) {
+        compras.removeIf(c -> c.getIdCompra().equals(idCompra));
+    }
+
 }
