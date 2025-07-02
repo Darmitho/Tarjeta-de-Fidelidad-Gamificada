@@ -37,4 +37,6 @@ public class Compra {
     public int calcularPuntosBase() {
         return (int) (monto / PUNTOS_POR_CADA_X_MONTO);
     }
+
+    public int calcularPuntosTotales(String nivelCliente)
 }
