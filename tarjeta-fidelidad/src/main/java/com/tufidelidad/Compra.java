@@ -31,4 +31,8 @@ public class Compra {
     public LocalDateTime getFecha() {
         return fecha;
     }
+
+    public int calcularPuntosBase() {
+        return (int) (monto / 100);
+    }
 }
