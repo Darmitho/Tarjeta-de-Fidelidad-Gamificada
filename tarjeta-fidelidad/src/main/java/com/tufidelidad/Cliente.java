@@ -85,4 +85,18 @@ public class Cliente {
     void setPuntos(int puntos) {
         this.puntos = puntos;
     }
+
+    public void calcularNivel() {
+        if (puntos < 0) {
+            nivel = NivelFidelidad.BRONCE;
+        } else if (puntos < 500) {
+            nivel = NivelFidelidad.BRONCE;
+        } else if (puntos < 1500) {
+            nivel = NivelFidelidad.PLATA;
+        } else if (puntos < 3000) {
+            nivel = NivelFidelidad.ORO;
+        } else {
+            nivel = NivelFidelidad.PLATINO;
+        }
+    }
 }
