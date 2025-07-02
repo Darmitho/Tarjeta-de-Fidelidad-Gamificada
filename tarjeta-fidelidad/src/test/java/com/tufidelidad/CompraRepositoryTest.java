@@ -98,4 +98,32 @@ public class CompraRepositoryTest {
         assertEquals(fechaActualizada, comprasCliente.get(0).getFecha());
     }
 
+    @Test
+        void actualizarCompra_nullDebeLanzarExcepcion() {
+            CompraRepository repo = new CompraRepository();
+            assertThrows(IllegalArgumentException.class, () -> repo.actualizar(null));
+        }
+
+    @Test
+    void actualizarCompra_noExistenteDebeLanzarExcepcion() {
+        CompraRepository repo = new CompraRepository();
+        Compra noExistente = new Compra("NOEXISTE", "CL99", 200.0, LocalDateTime.now());
+
+        assertThrows(IllegalArgumentException.class, () -> repo.actualizar(noExistente));
+    }
+
+    @Test
+    void eliminarCompra_existenteLaEliminaCorrectamente() {
+        CompraRepository repo = new CompraRepository();
+        Compra compra = new Compra("C001", "CL01", 100.0, LocalDateTime.now());
+        repo.registrar(compra);
+
+        repo.eliminar("C001");
+
+        List<Compra> comprasCliente = repo.listarPorCliente("CL01");
+        assertTrue(comprasCliente.isEmpty());
+    }
+
+
+
 }
