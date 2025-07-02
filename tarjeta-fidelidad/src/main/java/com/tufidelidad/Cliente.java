@@ -1,5 +1,7 @@
 package com.tufidelidad;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class Cliente {
@@ -10,6 +12,7 @@ public class Cliente {
     private int puntos;
     private NivelFidelidad nivel;
     private int streakDias;
+    private final List<Compra> historialCompras = new ArrayList<>();
 
     public Cliente(String id, String nombre, String correo) {
         this.id = Objects.requireNonNull(id, "ID no puede ser null");
@@ -63,5 +66,15 @@ public class Cliente {
                 ", nivel=" + nivel +
                 ", streakDias=" + streakDias +
                 '}';
+    }
+
+    public void agregarCompra(Compra compra) {
+        historialCompras.add(compra);
+        int puntosGanados = compra.calcularPuntosTotales(nivel.name().toLowerCase());
+        this.puntos += puntosGanados;
+    }
+
+    public List<Compra> getHistorialCompras() {
+        return historialCompras;
     }
 }
