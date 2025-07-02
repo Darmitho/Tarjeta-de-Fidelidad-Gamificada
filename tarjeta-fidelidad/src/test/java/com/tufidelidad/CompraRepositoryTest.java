@@ -124,6 +124,40 @@ public class CompraRepositoryTest {
         assertTrue(comprasCliente.isEmpty());
     }
 
+    @Test
+    void eliminarCompra_nullDebeLanzarExcepcion() {
+        CompraRepository repo = new CompraRepository();
+        assertThrows(IllegalArgumentException.class, () -> repo.eliminar(null));
+    }
 
+    @Test
+        void eliminarCompra_noExistenteDebeLanzarExcepcion() {
+            CompraRepository repo = new CompraRepository();
+            repo.registrar(new Compra("C001", "CL01", 150.0, LocalDateTime.now()));
+
+            assertThrows(IllegalArgumentException.class, () -> repo.eliminar("NOEXISTE"));
+        }
+
+    @Test
+    void bonoPorTresComprasEnMismoDia_otorgaBonusEnLaTerceraCompra() {
+        CompraRepository repo = new CompraRepository();
+        Cliente cliente = new Cliente("CL01", "Juan", "juan@mail.com");
+
+        LocalDateTime ahora = LocalDateTime.now();
+        Compra c1 = new Compra("C001", "CL01", 100.0, ahora.withHour(9));
+        Compra c2 = new Compra("C002", "CL01", 200.0, ahora.withHour(12));
+        Compra c3 = new Compra("C003", "CL01", 300.0, ahora.withHour(18));
+
+        repo.registrar(c1);
+        repo.registrar(c2);
+        repo.registrar(c3);
+
+        List<Compra> comprasCliente = repo.listarPorCliente("CL01");
+
+        assertEquals(3, comprasCliente.size());
+
+        int puntosTotales = comprasCliente.get(2).calcularPuntosTotales(cliente.getNivel().name().toLowerCase());
+        assertEquals(13, puntosTotales); // 3 puntos por $300 + 10 bonus
+    }
 
 }
