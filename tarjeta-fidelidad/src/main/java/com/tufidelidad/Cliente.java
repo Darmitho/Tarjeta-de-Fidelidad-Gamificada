@@ -50,6 +50,6 @@ public class Cliente {
     }
 
     public int getStreakDias() {
-        //
+        return streakDias;
     }
 }
