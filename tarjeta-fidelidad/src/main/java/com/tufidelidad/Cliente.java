@@ -9,6 +9,7 @@ public class Cliente {
     private final String correo;
     private int puntos;
     private NivelFidelidad nivel;
+    private int streakDias;
 
     public Cliente(String id, String nombre, String correo) {
         this.id = Objects.requireNonNull(id, "ID no puede ser null");
@@ -19,6 +20,7 @@ public class Cliente {
 
         this.puntos = 0;
         this.nivel = NivelFidelidad.BRONCE;
+        this.streakDias = 0;
     }
 
     private void validarCorreo(String correo) {
@@ -45,5 +47,9 @@ public class Cliente {
 
     public NivelFidelidad getNivel() {
         return nivel;
+    }
+
+    public int getStreakDias() {
+        //
     }
 }

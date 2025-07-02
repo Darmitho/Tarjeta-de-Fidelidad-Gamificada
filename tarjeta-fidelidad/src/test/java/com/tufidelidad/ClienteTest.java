@@ -33,4 +33,10 @@ public class ClienteTest {
         assertEquals("daniel@email.com", cliente.getCorreo());
     }
 
+    @Test
+    public void clienteDebeIniciarConStreakEnCero() {
+        Cliente cliente = new Cliente("999", "Lucía", "lucia@email.com");
+        assertEquals(0, cliente.getStreakDias());
+    }
+
 }
