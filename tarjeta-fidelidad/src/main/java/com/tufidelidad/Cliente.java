@@ -36,14 +36,14 @@ public class Cliente {
     }
 
     public String getId() {
-       // Vacio
+        return id;
     }
 
     public String getNombre() {
-        // Vacio
+        return nombre;
     }
 
     public String getCorreo() {
-        // Vacio
+        return correo;
     }
 }
