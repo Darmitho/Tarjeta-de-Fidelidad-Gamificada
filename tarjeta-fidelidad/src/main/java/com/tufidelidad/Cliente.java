@@ -70,11 +70,15 @@ public class Cliente {
 
     public void agregarCompra(Compra compra) {
         historialCompras.add(compra);
-        int puntosGanados = compra.calcularPuntosTotales(nivel.name().toLowerCase());
-        this.puntos += puntosGanados;
+        sumarPuntos(compra);
     }
 
     public List<Compra> getHistorialCompras() {
         return historialCompras;
+    }
+
+    private void sumarPuntos(Compra compra) {
+        int puntosGanados = compra.calcularPuntosTotales(nivel.name().toLowerCase());
+        this.puntos += puntosGanados;
     }
 }
