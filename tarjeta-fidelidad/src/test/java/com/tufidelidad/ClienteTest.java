@@ -3,6 +3,8 @@ package com.tufidelidad;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.time.LocalDateTime;
+
 public class ClienteTest {
 
     @Test
@@ -46,5 +48,18 @@ public class ClienteTest {
         String esperado = "Cliente{id='123', nombre='Daniel', correo='daniel@email.com', puntos=0, nivel=BRONCE, streakDias=0}";
         assertEquals(esperado, cliente.toString());
     }
+
+    @Test
+    void agregarCompra_sumaPuntosYActualizaHistorial() {
+        Cliente cliente = new Cliente("CL1", "Ana", "ana@mail.com");
+        Compra compra = new Compra("C1", "CL1", 250.0, LocalDateTime.of(2025, 7, 2, 10, 0));
+
+        cliente.agregarCompra(compra);
+
+        assertEquals(2, cliente.getPuntos()); // 2 puntos base * 1.0
+        assertEquals(1, cliente.getHistorialCompras().size());
+        assertEquals("C1", cliente.getHistorialCompras().get(0).getIdCompra());
+    }
+
     
 }
