@@ -62,4 +62,40 @@ public class CompraRepositoryTest {
         assertTrue(comprasCliente1.stream().allMatch(c -> c.getIdCliente().equals("CL01")));
     }
 
+    @Test
+    void listarPorCliente_sinComprasParaCliente_retornaListaVacia() {
+        CompraRepository repo = new CompraRepository();
+        LocalDateTime fecha = LocalDateTime.of(2025, 7, 2, 10, 0);
+        repo.registrar(new Compra("C001", "CL01", 100.0, fecha));
+
+        List<Compra> resultado = repo.listarPorCliente("CL99");
+
+        assertTrue(resultado.isEmpty());
+    }
+
+    @Test
+    void listarPorCliente_conIdNull_lanzaExcepcion() {
+        CompraRepository repo = new CompraRepository();
+        assertThrows(IllegalArgumentException.class, () -> repo.listarPorCliente(null));
+    }
+
+    @Test
+    void actualizarCompra_modificaCompraExistente() {
+        CompraRepository repo = new CompraRepository();
+        LocalDateTime fechaOriginal = LocalDateTime.of(2025, 7, 2, 10, 0);
+        LocalDateTime fechaActualizada = LocalDateTime.of(2025, 7, 3, 15, 0);
+
+        Compra original = new Compra("C001", "CL01", 100.0, fechaOriginal);
+        repo.registrar(original);
+
+        Compra actualizada = new Compra("C001", "CL01", 300.0, fechaActualizada);
+        repo.actualizar(actualizada);
+
+        List<Compra> comprasCliente = repo.listarPorCliente("CL01");
+
+        assertEquals(1, comprasCliente.size());
+        assertEquals(300.0, comprasCliente.get(0).getMonto());
+        assertEquals(fechaActualizada, comprasCliente.get(0).getFecha());
+    }
+
 }
