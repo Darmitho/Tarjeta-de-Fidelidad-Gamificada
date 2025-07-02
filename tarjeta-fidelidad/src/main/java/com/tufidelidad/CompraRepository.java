@@ -18,4 +18,10 @@ public class CompraRepository {
     public List<Compra> listarTodas() {
         return Collections.unmodifiableList(compras);
     }
+
+    public List<Compra> listarPorCliente(String idCliente) {
+        return compras.stream()
+                .filter(c -> c.getIdCliente().equals(idCliente))
+                .toList();
+    }
 }
