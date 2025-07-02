@@ -7,12 +7,16 @@ public class Cliente {
     private String correo;
 
     public Cliente(String id, String nombre, String correo) {
-        if (!correo.contains("@")) {
-            throw new IllegalArgumentException("Correo inválido");
-        }
+        validarCorreo(correo);
 
         this.id = id;
         this.nombre = nombre;
         this.correo = correo;
+    }
+
+    private void validarCorreo(String correo) {
+        if (!correo.contains("@")) {
+            throw new IllegalArgumentException("Correo inválido");
+        }
     }
 }
