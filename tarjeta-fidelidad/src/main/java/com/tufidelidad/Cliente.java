@@ -14,7 +14,8 @@ public class Cliente {
         this.id = id;
         this.nombre = nombre;
         this.correo = correo;
-        
+        this.puntos = 0;
+        this.nivel = NivelFidelidad.BRONCE;
     }
 
     private void validarCorreo(String correo) {
