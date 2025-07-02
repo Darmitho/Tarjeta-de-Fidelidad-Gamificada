@@ -44,7 +44,15 @@ public class CompraRepository {
     }
 
     public void eliminar(String idCompra) {
-        compras.removeIf(c -> c.getIdCompra().equals(idCompra));
+        if (idCompra == null) {
+            throw new IllegalArgumentException("El ID de compra no puede ser null");
+        }
+
+        boolean eliminado = compras.removeIf(c -> c.getIdCompra().equals(idCompra));
+        if (!eliminado) {
+            throw new IllegalArgumentException("No se encontró una compra con el ID proporcionado");
+        }
     }
+
 
 }
