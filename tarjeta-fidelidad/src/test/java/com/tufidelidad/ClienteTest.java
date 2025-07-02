@@ -43,11 +43,16 @@ public class ClienteTest {
     }
 
     @Test
-    public void clienteToStringDebeMostrarInformacionLegible() {
+    public void getResumenDebeMostrarInformacionLegible() {
         Cliente cliente = new Cliente("123", "Daniel", "daniel@email.com");
 
-        String esperado = "Cliente{id='123', nombre='Daniel', correo='daniel@email.com', puntos=0, nivel=BRONCE, streakDias=0}";
-        assertEquals(esperado, cliente.toString());
+        String esperado = """
+            Cliente 123: Daniel - daniel@email.com
+            Nivel: BRONCE
+            Puntos: 0
+            Streak: 0 días""";
+
+        assertEquals(esperado, cliente.getResumen());
     }
 
     @Test
@@ -107,5 +112,17 @@ public class ClienteTest {
 
         assertEquals(1, cliente.getStreakDias());
     }
+
+    @Test
+    void realizarCompra_actualizaNivelDeBronceAPlata() {
+        Cliente cliente = new Cliente("CL1", "Ana", "ana@mail.com");
+        Compra compra = new Compra("C1", "CL1", 50000, LocalDateTime.now());
+
+        cliente.agregarCompra(compra);
+
+        assertEquals(NivelFidelidad.PLATA, cliente.getNivel());
+        assertEquals(500, cliente.getPuntos());
+    }
+
 
 }

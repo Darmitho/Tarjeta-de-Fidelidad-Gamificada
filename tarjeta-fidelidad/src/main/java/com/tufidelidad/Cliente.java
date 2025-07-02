@@ -68,16 +68,11 @@ public class Cliente {
         return streakDias;
     }
 
-    @Override
-    public String toString() {
-        return "Cliente{" +
-                "id='" + id + '\'' +
-                ", nombre='" + nombre + '\'' +
-                ", correo='" + correo + '\'' +
-                ", puntos=" + puntos +
-                ", nivel=" + nivel +
-                ", streakDias=" + streakDias +
-                '}';
+    public String getResumen() {
+        return String.format(
+            "Cliente %s: %s - %s\nNivel: %s\nPuntos: %d\nStreak: %d días",
+            id, nombre, correo, nivel, puntos, streakDias
+        );
     }
 
     public void agregarCompra(Compra compra) {
