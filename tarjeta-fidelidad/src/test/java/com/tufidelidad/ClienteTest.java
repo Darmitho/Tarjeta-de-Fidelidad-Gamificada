@@ -85,4 +85,15 @@ public class ClienteTest {
                 "Fallo con puntos: " + entrada.getKey());
         }
     }
+
+    @Test
+    void actualizarStreak_calculaCorrectamenteLaRacha() {
+        Cliente cliente = new Cliente("CL1", "Luis", "luis@mail.com");
+
+        cliente.agregarCompra(new Compra("C1", "CL1", 100, LocalDateTime.of(2025, 7, 1, 10, 0))); // día -2
+        cliente.agregarCompra(new Compra("C2", "CL1", 200, LocalDateTime.of(2025, 7, 2, 12, 0))); // día -1
+        cliente.agregarCompra(new Compra("C3", "CL1", 300, LocalDateTime.of(2025, 7, 3, 9, 0)));  // día 0
+
+        assertEquals(3, cliente.getStreakDias());
+    }
 }
