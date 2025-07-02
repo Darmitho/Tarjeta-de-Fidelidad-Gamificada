@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class Compra {
+    private static final int PUNTOS_POR_CADA_X_MONTO = 100;
+
     private final String idCompra;
     private final String idCliente;
     private final double monto;
@@ -33,6 +35,6 @@ public class Compra {
     }
 
     public int calcularPuntosBase() {
-        return (int) (monto / 100);
+        return (int) (monto / PUNTOS_POR_CADA_X_MONTO);
     }
 }
