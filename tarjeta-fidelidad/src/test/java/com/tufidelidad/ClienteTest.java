@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 
 public class ClienteTest {
 
@@ -61,5 +62,27 @@ public class ClienteTest {
         assertEquals("C1", cliente.getHistorialCompras().get(0).getIdCompra());
     }
 
-    
+    @Test
+    void calcularNivel_debeActualizarCorrectamenteElNivel() {
+        Cliente cliente = new Cliente("CL1", "Mario", "mario@mail.com");
+
+        Map<Integer, NivelFidelidad> casos = Map.of(
+            -10, NivelFidelidad.BRONCE,
+            0, NivelFidelidad.BRONCE,
+            499, NivelFidelidad.BRONCE,
+            500, NivelFidelidad.PLATA,
+            1499, NivelFidelidad.PLATA,
+            1500, NivelFidelidad.ORO,
+            2999, NivelFidelidad.ORO,
+            3000, NivelFidelidad.PLATINO,
+            9999, NivelFidelidad.PLATINO
+        );
+
+        for (Map.Entry<Integer, NivelFidelidad> entrada : casos.entrySet()) {
+            cliente.setPuntos(entrada.getKey()); // usaremos un setter temporal o reflejo
+            cliente.calcularNivel();
+            assertEquals(entrada.getValue(), cliente.getNivel(), 
+                "Fallo con puntos: " + entrada.getKey());
+        }
+    }
 }

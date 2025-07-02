@@ -81,4 +81,8 @@ public class Cliente {
         int puntosGanados = compra.calcularPuntosTotales(nivel.name().toLowerCase());
         this.puntos += puntosGanados;
     }
+
+    void setPuntos(int puntos) {
+        this.puntos = puntos;
+    }
 }
