@@ -38,5 +38,25 @@ public class Compra {
         return (int) (monto / PUNTOS_POR_CADA_X_MONTO);
     }
 
-    public int calcularPuntosTotales(String nivelCliente)
+    public int calcularPuntosTotales(String nivelCliente) {
+        int puntosBase = calcularPuntosBase();
+        double multiplicador;
+
+        switch (nivelCliente.toLowerCase()) {
+            case "plata":
+                multiplicador = 1.2;
+                break;
+            case "oro":
+                multiplicador = 1.5;
+                break;
+            case "platino":
+                multiplicador = 2.0;
+                break;
+            default: // Bronce u otro valor
+                multiplicador = 1.0;
+        }
+
+        return (int) (puntosBase * multiplicador);
+    }
+
 }
