@@ -13,6 +13,10 @@ public class CompraRepository {
             throw new IllegalArgumentException("La compra no puede ser null");
         }
         compras.add(compra);
+
+        if (aplicaBonusPorTresCompras(compra)) {
+            compra.setBonus(10);
+        }
     }
 
     public List<Compra> listarTodas() {
@@ -52,6 +56,14 @@ public class CompraRepository {
         if (!eliminado) {
             throw new IllegalArgumentException("No se encontró una compra con el ID proporcionado");
         }
+    }
+
+    private boolean aplicaBonusPorTresCompras(Compra nuevaCompra) {
+        long comprasMismoDia = compras.stream()
+            .filter(c -> c.getIdCliente().equals(nuevaCompra.getIdCliente()))
+            .filter(c -> c.getFecha().toLocalDate().equals(nuevaCompra.getFecha().toLocalDate()))
+            .count();
+        return comprasMismoDia >= 2; // Esta es la tercera compra del día
     }
 
 

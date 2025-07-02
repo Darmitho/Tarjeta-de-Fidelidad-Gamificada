@@ -18,6 +18,7 @@ public class Compra {
     private final String idCliente;
     private final double monto;
     private final LocalDateTime fecha;
+    private int bonus;
 
     public Compra(String idCompra, String idCliente, double monto, LocalDateTime fecha) {
         this.idCompra = Objects.requireNonNull(idCompra);
@@ -42,6 +43,10 @@ public class Compra {
         return fecha;
     }
 
+    public void setBonus(int bonus) {
+        this.bonus = bonus;
+    }
+
     public int calcularPuntosBase() {
         return (int) (monto / PUNTOS_POR_CADA_X_MONTO);
     }
@@ -49,7 +54,7 @@ public class Compra {
     public int calcularPuntosTotales(String nivelCliente) {
         int puntosBase = calcularPuntosBase();
         double multiplicador = obtenerMultiplicador(nivelCliente);
-        return (int) (puntosBase * multiplicador);
+        return (int) (puntosBase * multiplicador) + bonus;
     }
 
     private double obtenerMultiplicador(String nivelCliente) {
