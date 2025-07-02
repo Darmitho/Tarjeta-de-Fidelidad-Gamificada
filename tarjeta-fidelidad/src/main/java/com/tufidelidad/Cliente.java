@@ -6,6 +6,15 @@ import java.util.Objects;
 
 public class Cliente {
 
+    private record NivelRegla(int umbral, NivelFidelidad nivel) {}
+    
+    private static final List<NivelRegla> REGLAS_NIVELES = List.of(
+        new NivelRegla(3000, NivelFidelidad.PLATINO),
+        new NivelRegla(1500, NivelFidelidad.ORO),
+        new NivelRegla(500, NivelFidelidad.PLATA),
+        new NivelRegla(0, NivelFidelidad.BRONCE)
+    );
+
     private final String id;
     private final String nombre;
     private final String correo;
@@ -71,6 +80,7 @@ public class Cliente {
     public void agregarCompra(Compra compra) {
         historialCompras.add(compra);
         sumarPuntos(compra);
+        calcularNivel();
     }
 
     public List<Compra> getHistorialCompras() {
@@ -87,16 +97,12 @@ public class Cliente {
     }
 
     public void calcularNivel() {
-        if (puntos < 0) {
-            nivel = NivelFidelidad.BRONCE;
-        } else if (puntos < 500) {
-            nivel = NivelFidelidad.BRONCE;
-        } else if (puntos < 1500) {
-            nivel = NivelFidelidad.PLATA;
-        } else if (puntos < 3000) {
-            nivel = NivelFidelidad.ORO;
-        } else {
-            nivel = NivelFidelidad.PLATINO;
+        int puntosValidos = Math.max(0, puntos);
+        for (NivelRegla regla : REGLAS_NIVELES) {
+            if (puntosValidos >= regla.umbral()) {
+                nivel = regla.nivel();
+                return;
+            }
         }
     }
 }
