@@ -1,18 +1,19 @@
 package com.tufidelidad;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 public class Compra {
-    private String idCompra;
-    private String idCliente;
-    private double monto;
-    private LocalDateTime fecha;
+    private final String idCompra;
+    private final String idCliente;
+    private final double monto;
+    private final LocalDateTime fecha;
 
     public Compra(String idCompra, String idCliente, double monto, LocalDateTime fecha) {
-        this.idCompra = idCompra;
-        this.idCliente = idCliente;
+        this.idCompra = Objects.requireNonNull(idCompra);
+        this.idCliente = Objects.requireNonNull(idCliente);
         this.monto = monto;
-        this.fecha = fecha;
+        this.fecha = Objects.requireNonNull(fecha);
     }
 
     public String getIdCompra() {
