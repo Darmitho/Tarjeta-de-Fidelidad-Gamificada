@@ -160,4 +160,31 @@ public class CompraRepositoryTest {
         assertEquals(13, puntosTotales); // 3 puntos por $300 + 10 bonus
     }
 
+    @Test
+    void bonoPorCuatroComprasEnMismoDia_otorgaBonusEnLaTerceraCompra() {
+        CompraRepository repo = new CompraRepository();
+        Cliente cliente = new Cliente("CL01", "Juan", "juan@mail.com");
+
+        LocalDateTime ahora = LocalDateTime.now();
+        Compra c1 = new Compra("C001", "CL01", 100.0, ahora.withHour(9));
+        Compra c2 = new Compra("C002", "CL01", 200.0, ahora.withHour(12));
+        Compra c3 = new Compra("C003", "CL01", 500.0, ahora.withHour(18));
+        Compra c4 = new Compra("C004", "CL01", 400.0, ahora.withHour(20));
+
+        repo.registrar(c1);
+        repo.registrar(c2);
+        repo.registrar(c3);
+        repo.registrar(c4);
+
+        List<Compra> comprasCliente = repo.listarPorCliente("CL01");
+
+        assertEquals(4, comprasCliente.size());
+
+        int puntosTotalesTerceraCompra = comprasCliente.get(2).calcularPuntosTotales(cliente.getNivel().name().toLowerCase());
+        assertEquals(15, puntosTotalesTerceraCompra); // 5 puntos por $500 + 10 bonus
+
+        int puntosTotalesCuartaCompra = comprasCliente.get(3).calcularPuntosTotales(cliente.getNivel().name().toLowerCase());
+        assertEquals(4, puntosTotalesCuartaCompra); // solo 4 puntos ya que no aplica bonus
+    }
+
 }

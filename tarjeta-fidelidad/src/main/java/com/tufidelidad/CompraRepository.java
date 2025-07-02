@@ -63,7 +63,7 @@ public class CompraRepository {
             .filter(c -> c.getIdCliente().equals(nuevaCompra.getIdCliente()))
             .filter(c -> c.getFecha().toLocalDate().equals(nuevaCompra.getFecha().toLocalDate()))
             .count();
-        return comprasMismoDia >= 2; // Esta es la tercera compra del día
+        return comprasMismoDia == 3; // Esta es la tercera compra del día
     }
 
 
