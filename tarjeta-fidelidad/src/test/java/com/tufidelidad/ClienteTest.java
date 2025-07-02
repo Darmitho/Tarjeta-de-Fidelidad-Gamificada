@@ -15,4 +15,12 @@ public class ClienteTest {
         String mensajeObtenido = exception.getMessage();
         assertTrue(mensajeObtenido.contains(mensajeEsperado));
     }
+
+    @Test
+    public void clienteDebeIniciarConPuntosYCategoriaIniciales() {
+        Cliente cliente = new Cliente("001", "Juan", "juan@email.com");
+
+        assertEquals(0, cliente.getPuntos());
+        assertEquals(NivelFidelidad.BRONCE, cliente.getNivel());
+    }
 }
