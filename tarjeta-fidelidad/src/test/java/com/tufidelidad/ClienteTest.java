@@ -23,4 +23,14 @@ public class ClienteTest {
         assertEquals(0, cliente.getPuntos());
         assertEquals(NivelFidelidad.BRONCE, cliente.getNivel());
     }
+
+    @Test
+    public void clienteDebeAlmacenarCorrectamenteSusDatos() {
+        Cliente cliente = new Cliente("123", "Daniel", "daniel@email.com");
+
+        assertEquals("123", cliente.getId());
+        assertEquals("Daniel", cliente.getNombre());
+        assertEquals("daniel@email.com", cliente.getCorreo());
+    }
+
 }

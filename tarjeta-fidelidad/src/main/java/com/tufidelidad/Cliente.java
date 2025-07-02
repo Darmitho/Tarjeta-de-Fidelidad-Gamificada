@@ -34,4 +34,16 @@ public class Cliente {
     public NivelFidelidad getNivel() {
         return nivel;
     }
+
+    public String getId() {
+       // Vacio
+    }
+
+    public String getNombre() {
+        // Vacio
+    }
+
+    public String getCorreo() {
+        // Vacio
+    }
 }
