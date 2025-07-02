@@ -52,4 +52,16 @@ public class Cliente {
     public int getStreakDias() {
         return streakDias;
     }
+
+    @Override
+    public String toString() {
+        return "Cliente{" +
+                "id='" + id + '\'' +
+                ", nombre='" + nombre + '\'' +
+                ", correo='" + correo + '\'' +
+                ", puntos=" + puntos +
+                ", nivel=" + nivel +
+                ", streakDias=" + streakDias +
+                '}';
+    }
 }
