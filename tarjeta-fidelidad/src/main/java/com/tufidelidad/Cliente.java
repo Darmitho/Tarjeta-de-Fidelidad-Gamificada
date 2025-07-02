@@ -27,14 +27,6 @@ public class Cliente {
         }
     }
 
-    public int getPuntos() {
-        return puntos;
-    }
-
-    public NivelFidelidad getNivel() {
-        return nivel;
-    }
-
     public String getId() {
         return id;
     }
@@ -45,5 +37,13 @@ public class Cliente {
 
     public String getCorreo() {
         return correo;
+    }
+
+    public int getPuntos() {
+        return puntos;
+    }
+
+    public NivelFidelidad getNivel() {
+        return nivel;
     }
 }
