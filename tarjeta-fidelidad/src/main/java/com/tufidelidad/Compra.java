@@ -1,10 +1,18 @@
 package com.tufidelidad;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.Objects;
 
 public class Compra {
     private static final int PUNTOS_POR_CADA_X_MONTO = 100;
+
+    private static final Map<String, Double> MULTIPLICADORES = Map.of(
+        "bronce", 1.0,
+        "plata", 1.2,
+        "oro", 1.5,
+        "platino", 2.0
+    );
 
     private final String idCompra;
     private final String idCliente;
@@ -40,23 +48,11 @@ public class Compra {
 
     public int calcularPuntosTotales(String nivelCliente) {
         int puntosBase = calcularPuntosBase();
-        double multiplicador;
-
-        switch (nivelCliente.toLowerCase()) {
-            case "plata":
-                multiplicador = 1.2;
-                break;
-            case "oro":
-                multiplicador = 1.5;
-                break;
-            case "platino":
-                multiplicador = 2.0;
-                break;
-            default: // Bronce u otro valor
-                multiplicador = 1.0;
-        }
-
+        double multiplicador = obtenerMultiplicador(nivelCliente);
         return (int) (puntosBase * multiplicador);
     }
 
+    private double obtenerMultiplicador(String nivelCliente) {
+        return MULTIPLICADORES.getOrDefault(nivelCliente.toLowerCase(), 1.0);
+    }
 }
