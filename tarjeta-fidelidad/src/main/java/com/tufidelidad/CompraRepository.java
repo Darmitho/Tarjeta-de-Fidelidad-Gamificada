@@ -27,4 +27,13 @@ public class CompraRepository {
                 .filter(c -> c.getIdCliente().equals(idCliente))
                 .toList();
     }
+
+    public void actualizar(Compra compra) {
+    for (int i = 0; i < compras.size(); i++) {
+        if (compras.get(i).getIdCompra().equals(compra.getIdCompra())) {
+            compras.set(i, compra);
+            return;
+        }
+    }
+}
 }
