@@ -2,4 +2,4 @@
 .vscode/
 
 # Ignorar carpeta de salida de Maven
-/target/
+tarjeta-fidelidad/target/
