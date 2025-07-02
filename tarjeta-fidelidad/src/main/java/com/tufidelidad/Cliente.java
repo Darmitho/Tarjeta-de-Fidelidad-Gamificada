@@ -1,8 +1,11 @@
 package com.tufidelidad;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class Cliente {
 
@@ -81,6 +84,7 @@ public class Cliente {
         historialCompras.add(compra);
         sumarPuntos(compra);
         calcularNivel();
+        actualizarStreak(compra);
     }
 
     public List<Compra> getHistorialCompras() {
@@ -104,5 +108,25 @@ public class Cliente {
                 return;
             }
         }
+    }
+
+    private void actualizarStreak(Compra compraReciente) {
+        Set<LocalDate> diasCompra = historialCompras.stream()
+            .map(compra -> compra.getFecha().toLocalDate())
+            .collect(Collectors.toSet());
+
+        if (diasCompra.isEmpty()) {
+            streakDias = 0;
+            return;
+        }
+
+        LocalDate hoy = compraReciente.getFecha().toLocalDate();
+        int racha = 0;
+
+        while (diasCompra.contains(hoy.minusDays(racha))) {
+            racha++;
+        }
+
+        this.streakDias = racha;
     }
 }
