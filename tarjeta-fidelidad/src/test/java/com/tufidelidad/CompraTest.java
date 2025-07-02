@@ -18,4 +18,14 @@ public class CompraTest {
         assertEquals(1500.0, compra.getMonto());
         assertEquals(fecha, compra.getFecha());
     }
+
+    @Test
+    public void calcularPuntosBaseDebeRetornarUnoPorCada100Pesos() {
+        LocalDateTime fecha = LocalDateTime.of(2025, 7, 2, 12, 30);
+        Compra compra = new Compra("C001", "CL123", 380.0, fecha);
+
+        int puntos = compra.calcularPuntosBase();
+
+        assertEquals(3, puntos);
+    }
 }
