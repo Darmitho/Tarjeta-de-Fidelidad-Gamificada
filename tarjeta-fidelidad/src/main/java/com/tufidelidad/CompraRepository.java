@@ -20,6 +20,9 @@ public class CompraRepository {
     }
 
     public List<Compra> listarPorCliente(String idCliente) {
+        if (idCliente == null) {
+            throw new IllegalArgumentException("El ID del cliente no puede ser null");
+        }
         return compras.stream()
                 .filter(c -> c.getIdCliente().equals(idCliente))
                 .toList();
