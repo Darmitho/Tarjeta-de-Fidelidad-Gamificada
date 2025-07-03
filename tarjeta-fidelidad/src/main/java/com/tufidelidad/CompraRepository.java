@@ -66,5 +66,4 @@ public class CompraRepository {
         return comprasMismoDia == 3; // Esta es la tercera compra del día
     }
 
-
 }

@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
+import java.util.List;
 
 public class App {
 
@@ -21,6 +22,10 @@ public class App {
             System.out.println("3. Actualizar cliente");
             System.out.println("4. Eliminar cliente");
             System.out.println("5. Registrar compra");
+            System.out.println("6. Listar compras");
+            System.out.println("7. Listar compras por cliente");
+            System.out.println("8. Actualizar compra");
+            System.out.println("9. Eliminar compra");
             System.out.println("0. Salir");
 
             System.out.print("Seleccione una opción: ");
@@ -34,6 +39,8 @@ public class App {
                     case 3 -> actualizarCliente();
                     case 4 -> eliminarCliente();
                     case 5 -> registrarCompra();
+                    case 6 -> mostrarHistorialCompras();
+                    case 7 -> mostrarHistorialComprasPorCliente();
                     case 0 -> {
                         System.out.println("¡Hasta luego!");
                         return;
@@ -155,6 +162,59 @@ public class App {
         cliente.agregarCompra(compra);
 
         System.out.println("Compra registrada correctamente con ID: " + idCompra);
-    }   
+    }
+
+    private static void mostrarHistorialCompras() {
+        List<Compra> compras = compraRepo.listarTodas();
+
+        if (compras.isEmpty()) {
+            System.out.println("No hay compras registradas.");
+            return;
+        }
+
+        System.out.println("\n--- Historial de Compras ---");
+        System.out.printf("%-8s %-8s %-10s %-20s%n", "ID", "Cliente", "Monto", "Fecha");
+        System.out.println("--------------------------------------------------------");
+
+        for (Compra compra : compras) {
+            System.out.printf("%-8s %-8s %-10.2f %-20s%n",
+                compra.getIdCompra(),
+                compra.getIdCliente(),
+                compra.getMonto(),
+                compra.getFecha()
+            );
+        }
+    }
+
+    private static void mostrarHistorialComprasPorCliente() {
+        System.out.print("Ingrese el ID del cliente: ");
+        String idCliente = scanner.nextLine().trim();
+        Cliente cliente;
+        try {
+            cliente = clienteRepo.buscarPorId(idCliente);
+        } catch (IllegalArgumentException e) {
+            System.out.println("Error: " + e.getMessage());
+            return;
+        }
+
+        List<Compra> historial = cliente.getHistorialCompras();
+
+        if (historial.isEmpty()) {
+            System.out.println("El cliente " + idCliente + " no tiene compras registradas.");
+            return;
+        }
+
+        System.out.println("\n--- Historial de Compras de " + cliente.getNombre() + " (" + idCliente + ") ---");
+        System.out.printf("%-8s %-10s %-20s%n", "ID", "Monto", "Fecha");
+        System.out.println("-----------------------------------------------");
+
+        for (Compra compra : historial) {
+            System.out.printf("%-8s %-10.2f %-20s%n",
+                compra.getIdCompra(),
+                compra.getMonto(),
+                compra.getFecha()
+            );
+        }
+    }
 
 }
