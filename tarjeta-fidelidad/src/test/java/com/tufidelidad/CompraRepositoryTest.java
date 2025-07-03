@@ -198,4 +198,100 @@ public class CompraRepositoryTest {
         assertEquals("C001", compraEncontrada.getIdCompra());
     }
 
+   @Test
+    void registrarCompraDuplicadaDeberiaLanzarExcepcion() {
+        CompraRepository repo = new CompraRepository();
+        Compra compra = new Compra("DUP", "CL1", 10000, LocalDateTime.now());
+
+        repo.registrar(compra);
+
+        IllegalArgumentException ex = assertThrows(
+            IllegalArgumentException.class,
+            () -> repo.registrar(compra),
+            "Se esperaba una excepción por compra duplicada"
+        );
+
+        assertEquals("Ya existe una compra con ID: DUP", ex.getMessage());
+    }
+
+    @Test
+    void obtenerComprasDeClienteSinComprasDebeRetornarListaVacia() {
+        CompraRepository repo = new CompraRepository();
+        List<Compra> compras = repo.listarPorCliente("INEXISTENTE");
+
+        assertNotNull(compras);
+        assertTrue(compras.isEmpty());
+    }
+
+    @Test
+    void eliminarTodasLasComprasDejaRepositorioVacio() {
+        CompraRepository repo = new CompraRepository();
+
+        repo.registrar(new Compra("C1", "CL1", 1000, LocalDateTime.now()));
+        repo.registrar(new Compra("C2", "CL2", 2000, LocalDateTime.now()));
+
+        repo.eliminar("C1");
+        repo.eliminar("C2");
+
+        assertTrue(repo.listarTodas().isEmpty(), "El repositorio debe quedar vacío tras eliminar todo");
+    }
+
+    @Test
+    void registrarCompraConMontoMuyAltoNoRompeRepositorio() {
+        CompraRepository repo = new CompraRepository();
+        Compra compra = new Compra("MAX", "CL3", Integer.MAX_VALUE, LocalDateTime.now());
+
+        repo.registrar(compra);
+        List<Compra> compras = repo.listarPorCliente("CL3");
+
+        assertEquals(1, compras.size());
+        assertEquals("MAX", compras.get(0).getIdCompra());
+    }
+
+    @Test
+    void eliminarCompraDosVecesDebeLanzarExcepcion() {
+        CompraRepository repo = new CompraRepository();
+        Compra compra = new Compra("DEL", "CL4", 1000, LocalDateTime.now());
+
+        repo.registrar(compra);
+        repo.eliminar("DEL");
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            repo.eliminar("DEL");
+        });
+    }
+
+    @Test
+    void registrarCompraConClienteNuloDebeLanzarExcepcion() {
+        assertThrows(NullPointerException.class, () -> {
+            new Compra("NULL1", null, 5000, LocalDateTime.now());
+        });
+    }
+
+    @Test
+    void registrarCompraConMontoNegativoDebeLanzarExcepcion() {
+        CompraRepository repo = new CompraRepository();
+        assertThrows(IllegalArgumentException.class, () -> {
+            repo.registrar(new Compra("NEG1", "CL5", -1000, LocalDateTime.now()));
+        });
+    }
+
+    @Test
+    void registrarCompraConFechaFuturaDebeLanzarExcepcion() {
+        CompraRepository repo = new CompraRepository();
+        LocalDateTime fechaFutura = LocalDateTime.now().plusDays(1);
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            repo.registrar(new Compra("FUTURE1", "CL6", 1000, fechaFutura));
+        });
+    }
+
+    @Test
+    void registrarCompraConIdNuloDebeLanzarExcepcion() {
+        CompraRepository repo = new CompraRepository();
+        assertThrows(NullPointerException.class, () -> {
+            repo.registrar(new Compra(null, "CL7", 1000, LocalDateTime.now()));
+        });
+    }
+
 }
