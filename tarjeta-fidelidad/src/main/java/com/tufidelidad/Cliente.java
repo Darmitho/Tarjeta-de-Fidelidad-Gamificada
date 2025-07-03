@@ -2,6 +2,7 @@ package com.tufidelidad;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -79,7 +80,7 @@ public class Cliente {
         historialCompras.add(compra);
         sumarPuntos(compra);
         calcularNivel();
-        actualizarStreak(compra);
+        actualizarStreak();
     }
 
     public List<Compra> getHistorialCompras() {
@@ -105,20 +106,43 @@ public class Cliente {
         }
     }
 
-    private void actualizarStreak(Compra compraReciente) {
-        this.streakDias = calcularStreakDesde(compraReciente.getFecha().toLocalDate());
-    }
-
-    private int calcularStreakDesde(LocalDate referencia) {
-        Set<LocalDate> diasCompra = historialCompras.stream()
+    private void actualizarStreak() {
+        // Obtener fechas únicas de compra ordenadas de más reciente a más antigua
+        List<LocalDate> fechas = historialCompras.stream()
             .map(compra -> compra.getFecha().toLocalDate())
-            .collect(Collectors.toSet());
+            .distinct()
+            .sorted(Comparator.reverseOrder())
+            .collect(Collectors.toList());
 
         int racha = 0;
-        while (diasCompra.contains(referencia.minusDays(racha))) {
-            racha++;
+        LocalDate diaReferencia = fechas.isEmpty() ? null : fechas.get(0);
+
+        for (LocalDate fecha : fechas) {
+            if (fecha.equals(diaReferencia.minusDays(racha))) {
+                racha++;
+            } else {
+                break;
+            }
         }
 
-        return racha;
+        this.streakDias = racha;
+    }
+
+    public void eliminarCompra(String idCompra) {
+        boolean eliminada = historialCompras.removeIf(c -> c.getIdCompra().equals(idCompra));
+
+        if (!eliminada) {
+            throw new IllegalArgumentException("No se encontró ninguna compra con ID: " + idCompra);
+        }
+
+        recalcularPuntos();
+        calcularNivel();
+        actualizarStreak();
+    }
+
+    private void recalcularPuntos() {
+        this.puntos = historialCompras.stream()
+            .mapToInt(c -> c.calcularPuntosTotales(nivel.name()))
+            .sum();
     }
 }
