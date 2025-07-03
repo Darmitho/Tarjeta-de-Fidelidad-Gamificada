@@ -131,25 +131,18 @@ public class Cliente {
     public void eliminarCompra(String idCompra) {
         boolean eliminada = historialCompras.removeIf(c -> c.getIdCompra().equals(idCompra));
 
-        if (eliminada) {
-            // Recalcular puntos
-            this.puntos = historialCompras.stream()
-                .mapToInt(c -> c.calcularPuntosTotales(this.nivel.name()))
-                .sum();
-
-            // Recalcular nivel
-            calcularNivel();
-
-            // Recalcular streak
-            if (historialCompras.isEmpty()) {
-                this.streakDias = 0;
-            } else {
-                Compra masReciente = historialCompras.stream()
-                    .max(Comparator.comparing(Compra::getFecha))
-                    .orElseThrow();
-
-                actualizarStreak();
-            }
+        if (!eliminada) {
+            throw new IllegalArgumentException("No se encontró ninguna compra con ID: " + idCompra);
         }
+
+        recalcularPuntos();
+        calcularNivel();
+        actualizarStreak();
+    }
+
+    private void recalcularPuntos() {
+        this.puntos = historialCompras.stream()
+            .mapToInt(c -> c.calcularPuntosTotales(nivel.name()))
+            .sum();
     }
 }
