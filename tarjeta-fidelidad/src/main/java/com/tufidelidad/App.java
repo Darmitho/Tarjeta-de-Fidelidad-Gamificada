@@ -41,6 +41,8 @@ public class App {
                     case 5 -> registrarCompra();
                     case 6 -> mostrarHistorialCompras();
                     case 7 -> mostrarHistorialComprasPorCliente();
+                    case 8 -> actualizarCompra();
+                    case 9 -> eliminarCompra();
                     case 0 -> {
                         System.out.println("¡Hasta luego!");
                         return;
@@ -55,7 +57,7 @@ public class App {
     }
 
     private static void agregarCliente() {
-        // ID automático
+        System.out.println("\n--- AGREGAR CLIENTE ---");
         String id = String.format("CL%03d", contadorClientes);
 
         System.out.print("Nombre: ");
@@ -67,7 +69,7 @@ public class App {
         try {
             Cliente nuevo = new Cliente(id, nombre, correo);
             clienteRepo.agregar(nuevo);
-            contadorClientes++; // Incrementar si se agrega correctamente
+            contadorClientes++;
             System.out.println("Cliente agregado correctamente. ID generado: " + id);
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
@@ -109,14 +111,23 @@ public class App {
 
     private static void eliminarCliente() {
         System.out.print("ID del cliente a eliminar: ");
-        String id = scanner.nextLine();
+        String id = scanner.nextLine().trim();
 
+        
         try {
-            clienteRepo.eliminar(id);
-            System.out.println("Cliente eliminado.");
-        } catch (Exception e) {
+            clienteRepo.buscarPorId(id);
+        } catch (IllegalArgumentException e) {
             System.out.println("Error: " + e.getMessage());
+            return;
         }
+
+        List<Compra> comprasCliente = compraRepo.listarPorCliente(id);
+        for (Compra compra : comprasCliente) {
+            compraRepo.eliminar(compra.getIdCompra());
+        }
+
+        clienteRepo.eliminar(id);
+        System.out.println("Cliente y todas sus compras eliminadas correctamente.");
     }
 
     private static void registrarCompra() {
@@ -216,5 +227,101 @@ public class App {
             );
         }
     }
+
+    private static void actualizarCompra() {
+        System.out.print("Ingrese el ID de la compra a actualizar: ");
+        String idCompra = scanner.nextLine().trim();
+
+        Compra compraExistente = compraRepo.buscarPorId(idCompra);
+        if (compraExistente == null) {
+            System.out.println("No se encontró una compra con ID: " + idCompra);
+            return;
+        }
+
+        Cliente clienteActual = clienteRepo.buscarPorId(compraExistente.getIdCliente());
+        if (clienteActual == null) {
+            System.out.println("El cliente asociado a esta compra ya no existe.");
+            return;
+        }
+
+        System.out.print("¿Desea cambiar el ID del cliente? (s/n): ");
+        String cambiarCliente = scanner.nextLine().trim().toLowerCase();
+
+        String nuevoIdCliente = compraExistente.getIdCliente();
+        if (cambiarCliente.equals("s")) {
+            System.out.print("Ingrese el nuevo ID del cliente: ");
+            nuevoIdCliente = scanner.nextLine().trim();
+            if (clienteRepo.buscarPorId(nuevoIdCliente) == null) {
+                System.out.println("No existe un cliente con ese ID.");
+                return;
+            }
+        }
+
+        System.out.print("Ingrese el nuevo monto de la compra: ");
+        double nuevoMonto;
+        try {
+            nuevoMonto = Double.parseDouble(scanner.nextLine());
+        } catch (NumberFormatException e) {
+            System.out.println("Monto inválido.");
+            return;
+        }
+
+        System.out.print("Ingrese la nueva fecha (DD-MM-AAAA): ");
+        String nuevaFechaStr = scanner.nextLine();
+
+        LocalDate nuevaFecha;
+        try {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+            nuevaFecha = LocalDate.parse(nuevaFechaStr, formatter);
+        } catch (Exception e) {
+            System.out.println("Formato de fecha inválido. Debe ser DD-MM-AAAA.");
+            return;
+        }
+
+        clienteActual.eliminarCompra(idCompra);
+        Compra compraActualizada = new Compra(idCompra, nuevoIdCliente, nuevoMonto, nuevaFecha.atStartOfDay());
+        Cliente clienteDestino = clienteRepo.buscarPorId(nuevoIdCliente);
+        clienteDestino.agregarCompra(compraActualizada);
+        compraRepo.actualizar(compraActualizada);
+
+        System.out.println("Compra actualizada correctamente.");
+    }
+
+    private static void eliminarCompra() {
+        System.out.print("Ingrese el ID de la compra a eliminar: ");
+        String idCompra = scanner.nextLine().trim();
+
+        Compra compraExistente = compraRepo.buscarPorId(idCompra);
+        if (compraExistente == null) {
+            System.out.println("No se encontró una compra con ID: " + idCompra);
+            return;
+        }
+
+        String idCliente = compraExistente.getIdCliente();
+        Cliente cliente = clienteRepo.buscarPorId(idCliente);
+
+        if (cliente == null) {
+            System.out.println("El cliente asociado a esta compra ya no existe.");
+            return;
+        }
+
+        try {
+            cliente.eliminarCompra(idCompra);
+        } catch (IllegalArgumentException e) {
+            System.out.println("Error al eliminar del historial del cliente: " + e.getMessage());
+            return;
+        }
+
+        try {
+            compraRepo.eliminar(idCompra);
+        } catch (IllegalArgumentException e) {
+            System.out.println("Error al eliminar del repositorio: " + e.getMessage());
+            return;
+        }
+
+        System.out.println("Compra eliminada correctamente.");
+    }
+
+
 
 }
