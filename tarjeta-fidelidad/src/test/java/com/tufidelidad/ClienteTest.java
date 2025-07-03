@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 
 public class ClienteTest {
@@ -167,6 +168,148 @@ public class ClienteTest {
         assertEquals(0, cliente.getStreakDias(), "La racha debe ser 0 al eliminar la única compra");
         assertEquals(NivelFidelidad.BRONCE, cliente.getNivel(), "El nivel debe volver a Bronce");
         assertTrue(cliente.getHistorialCompras().isEmpty(), "El historial de compras debe estar vacío");
+    }
+
+    @Test
+    void noDebePermitirNombreVacio() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            new Cliente("CL100", "", "mail@dominio.com");
+        });
+    }
+
+    @Test
+    void noDebePermitirNombreNulo() {
+        assertThrows(NullPointerException.class, () -> {
+            new Cliente("CL100", null, "mail@dominio.com");
+        });
+    }
+
+    @Test
+    void noDebePermitirCorreoNulo() {
+        assertThrows(NullPointerException.class, () -> {
+            new Cliente("CL101", "Pedro", null);
+        });
+    }
+
+    @Test
+    void agregarPuntosNegativosNoDeberiaCambiarNada() {
+        Cliente c = new Cliente("CL102", "Ana", "ana@mail.com");
+        Compra compra = new Compra("C1", "CL102", -100, LocalDateTime.now());
+        c.agregarCompra(compra);
+        assertEquals(0, c.getPuntos(), "No debe aceptar puntos negativos");
+    }
+
+    @Test
+    void nivelDebeActualizarseCorrectamentePorPuntos() {
+        Cliente c = new Cliente("CL104", "Miguel", "miguel@mail.com");
+
+        // Compra de 25.000 → 250 puntos → Nivel: Bronce
+        c.agregarCompra(new Compra("C1", "CL104", 25000, LocalDateTime.now()));
+        assertEquals(NivelFidelidad.BRONCE, c.getNivel());
+
+        // Compra de 25.000 → 250 puntos → Total: 500 → Nivel: Plata
+        c.agregarCompra(new Compra("C2", "CL104", 25000, LocalDateTime.now()));
+        assertEquals(NivelFidelidad.PLATA, c.getNivel());
+
+        // Compra de 50.000 → 600 puntos (20% bonus) → Total: 1100 → Nivel: Plata aún
+        c.agregarCompra(new Compra("C3", "CL104", 50000, LocalDateTime.now()));
+        assertEquals(NivelFidelidad.PLATA, c.getNivel());
+
+        // Compra de 100.000 → 1500 puntos (50% bonus) → Total: 2600 → Nivel: Oro
+        c.agregarCompra(new Compra("C4", "CL104", 100000, LocalDateTime.now()));
+        assertEquals(NivelFidelidad.ORO, c.getNivel());
+
+        // Compra de 100.000 → 1500 puntos (50% bonus) → Total: 4100 → Nivel: Platino
+        c.agregarCompra(new Compra("C5", "CL104", 100000, LocalDateTime.now()));
+        assertEquals(NivelFidelidad.PLATINO, c.getNivel());
+    }
+
+    @Test
+    void streakDebeCortarseSiHayDiasSaltados() {
+        Cliente c = new Cliente("CL106", "Juan", "juan@mail.com");
+
+        LocalDateTime hoy = LocalDateTime.now();
+        c.agregarCompra(new Compra("C1", "CL106", 10000, hoy));
+        c.agregarCompra(new Compra("C2", "CL106", 20000, hoy.minusDays(2)));
+        c.agregarCompra(new Compra("C3", "CL106", 30000, hoy.minusDays(3)));
+
+        assertEquals(1, c.getStreakDias(), "Solo hoy cuenta, los demás no son consecutivos");
+    }
+
+    @Test
+    void eliminarCompraInexistenteLanzaExcepcion() {
+        Cliente c = new Cliente("CL108", "Mario", "mario@mail.com");
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            c.eliminarCompra("NO_EXISTE");
+        });
+    }
+
+    @Test
+    void agregarBonusPorTresComprasEnElMismoDia() {
+        Cliente c = new Cliente("CL109", "Laura", "laura@mail.com");
+        LocalDateTime hoy = LocalDateTime.now();
+
+        c.agregarCompra(new Compra("C1", "CL109", 10000, hoy));
+        c.agregarCompra(new Compra("C2", "CL109", 10000, hoy));
+        c.agregarCompra(new Compra("C3", "CL109", 10000, hoy));
+
+        assertEquals(310, c.getPuntos(), "Debería haber recibido el bono por 3 compras en el mismo día");
+    }
+
+    @Test
+    void clienteConMilComprasDebeTenerPuntosCorrectos() {
+        Cliente c = new Cliente("MIL", "StressTest", "stress@mail.com");
+        for (int i = 0; i < 1000; i++) {
+            c.agregarCompra(new Compra("C" + i, "MIL", 1000, LocalDateTime.now().minusDays(i)));
+        }
+        assertTrue(c.getPuntos() > 10000); // Mayor a 10000 por que el usuario va subiendo de nivel
+        assertEquals(1000, c.getStreakDias()); // Solo una compra por día, no consecutiva
+    }
+
+    @Test
+    void eliminarCompraIntermediaDebeRecalcularBienStreak() {
+        Cliente c = new Cliente("ELIM", "Eliminar", "elim@mail.com");
+
+        LocalDateTime hoy = LocalDateTime.now();
+        c.agregarCompra(new Compra("C1", "ELIM", 10000, hoy));
+        c.agregarCompra(new Compra("C2", "ELIM", 10000, hoy.minusDays(1)));
+        c.agregarCompra(new Compra("C3", "ELIM", 10000, hoy.minusDays(2)));
+
+        assertEquals(3, c.getStreakDias());
+
+        c.eliminarCompra("C2");
+        assertEquals(1, c.getStreakDias(), "El streak debería romperse sin el día intermedio");
+    }
+
+    @Test
+    void modificarListaExternaDeHistorialNoDebeAfectarInterno() {
+        Cliente c = new Cliente("SAFE", "Seguro", "seguro@mail.com");
+        c.agregarCompra(new Compra("CX", "SAFE", 10000, LocalDateTime.now()));
+
+        List<Compra> historial = c.getHistorialCompras();
+        assertEquals(1, c.getHistorialCompras().size(), "Debería haber una compra en el historial");
+
+        historial.clear();  // Si es la lista real, esto es un error
+
+        assertEquals(1, c.getHistorialCompras().size(), "La lista interna no debería verse afectada");
+    }
+
+    @Test
+    void agregarCompraConFechaFuturaNoDeberiaPermitirlo() {
+        Cliente c = new Cliente("FUTURO", "Futuro", "futuro@mail.com");
+        assertThrows(IllegalArgumentException.class, () -> {
+            c.agregarCompra(new Compra("C1", "FUTURO", 10000, LocalDateTime.now().plusDays(1)));
+        });
+
+    }
+
+    @Test
+    void agregarCompraConMontoCeroNoDeberiaAfectarPuntos() {
+        Cliente c = new Cliente("CERO", "Cero", "cero@mail.com");
+        c.agregarCompra(new Compra("C1", "CERO", 0, LocalDateTime.now()));
+        assertEquals(0, c.getPuntos(), "No debería haber puntos por una compra de cero");
+        assertTrue(c.getHistorialCompras().isEmpty(), "No debería haber compras registradas con monto cero");
     }
 
 }

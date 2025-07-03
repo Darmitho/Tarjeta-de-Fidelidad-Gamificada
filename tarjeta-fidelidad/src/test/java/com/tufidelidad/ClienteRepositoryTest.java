@@ -90,5 +90,91 @@ class ClienteRepositoryTest {
         assertTrue(resultado.contains(cliente2));
     }
 
+    @Test
+    void noDebePermitirGuardarClienteDuplicado() {
+        ClienteRepository repo = new ClienteRepository();
+        Cliente c1 = new Cliente("C001", "Ana", "ana@mail.com");
+        Cliente c2 = new Cliente("C001", "Ana2", "ana2@mail.com");  // Mismo ID
 
+        repo.agregar(c1);
+
+        IllegalArgumentException ex = assertThrows(
+            IllegalArgumentException.class,
+            () -> repo.agregar(c2),
+            "Se esperaba una excepción por cliente duplicado"
+        );
+
+        assertEquals("Ya existe un cliente con ID: C001", ex.getMessage());
+    }
+
+    @Test
+    void listarNoDebeRetornarReferenciaInterna() {
+        ClienteRepository repo = new ClienteRepository();
+        Cliente c1 = new Cliente("C001", "Ana", "ana@mail.com");
+        repo.agregar(c1);
+
+        List<Cliente> lista = repo.listar();
+        lista.clear();  // Modifica la lista retornada
+
+        // Si la lista interna fue modificada, esto fallará
+        assertEquals(1, repo.listar().size(), "No debería verse afectado si se limpia la lista externa");
+    }
+
+    @Test
+    void eliminarTodosLosClientes() {
+        ClienteRepository repo = new ClienteRepository();
+        repo.agregar(new Cliente("C1", "Uno", "uno@mail.com"));
+        repo.agregar(new Cliente("C2", "Dos", "dos@mail.com"));
+
+        repo.eliminar("C1");
+        repo.eliminar("C2");
+
+        assertTrue(repo.listar().isEmpty(), "Después de eliminar todos, lista debe estar vacía");
+    }
+
+    @Test
+    void buscarLuegoDeEliminarDebeLanzarExcepcion() {
+        ClienteRepository repo = new ClienteRepository();
+        Cliente cliente = new Cliente("C1", "Pepe", "pepe@mail.com");
+        repo.agregar(cliente);
+
+        repo.eliminar("C1");
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            repo.buscarPorId("C1");
+        });
+    }
+
+    @Test
+    void buscarPorIdInexistenteDebeLanzarExcepcion() {
+        ClienteRepository repo = new ClienteRepository();
+
+        Exception e_id = assertThrows(IllegalArgumentException.class, () -> repo.buscarPorId("999"));
+        assertEquals("No existe cliente con ID: 999", e_id.getMessage());
+
+        Exception e_null = assertThrows(IllegalArgumentException.class, () -> repo.buscarPorId(null));
+        assertEquals("No existe cliente con ID: null", e_null.getMessage());
+    }
+
+    @Test
+    void eliminarConIdNuloOVacioDebeLanzarExcepcion() {
+        ClienteRepository repo = new ClienteRepository();
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            repo.eliminar(null);
+        });
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            repo.eliminar("   ");
+        });
+    }
+
+    @Test
+    void eliminarConIdNoExistenteDebeLanzarExcepcion() {
+        ClienteRepository repo = new ClienteRepository();
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            repo.eliminar("C000");
+        });
+    }
 }
