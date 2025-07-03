@@ -2,6 +2,7 @@ package com.tufidelidad;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class ClienteRepository {
 
@@ -25,10 +26,12 @@ public class ClienteRepository {
     }
 
     public void actualizar(Cliente cliente) {
-    if (!clientes.containsKey(cliente.getId())) {
-        throw new IllegalArgumentException("No existe cliente con ID: " + cliente.getId());
+        Objects.requireNonNull(cliente, "El cliente no puede ser null");
+        String id = cliente.getId();
+        if (!clientes.containsKey(id)) {
+            throw new IllegalArgumentException("No existe cliente con ID: " + id);
+        }
+        clientes.put(id, cliente);
     }
-    clientes.put(cliente.getId(), cliente);
-}
 
 }
