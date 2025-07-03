@@ -17,15 +17,16 @@ public class App {
     public static void main(String[] args) {
         while (true) {
             System.out.println("\n--- GESTIÓN DE CLIENTES ---");
-            System.out.println("1. Agregar cliente");
-            System.out.println("2. Listar clientes");
-            System.out.println("3. Actualizar cliente");
-            System.out.println("4. Eliminar cliente");
-            System.out.println("5. Registrar compra");
-            System.out.println("6. Listar compras");
-            System.out.println("7. Listar compras por cliente");
-            System.out.println("8. Actualizar compra");
-            System.out.println("9. Eliminar compra");
+            System.out.println("1.  Agregar cliente");
+            System.out.println("2.  Listar clientes");
+            System.out.println("3.  Actualizar cliente");
+            System.out.println("4.  Eliminar cliente");
+            System.out.println("5.  Registrar compra");
+            System.out.println("6.  Listar compras");
+            System.out.println("7.  Listar compras por cliente");
+            System.out.println("8.  Actualizar compra");
+            System.out.println("9.  Eliminar compra");
+            System.out.println("10. Resumen de cliente por ID");
             System.out.println("0. Salir");
 
             System.out.print("Seleccione una opción: ");
@@ -43,6 +44,7 @@ public class App {
                     case 7 -> mostrarHistorialComprasPorCliente();
                     case 8 -> actualizarCompra();
                     case 9 -> eliminarCompra();
+                    case 10 -> mostrarResumenClientePorId();
                     case 0 -> {
                         System.out.println("¡Hasta luego!");
                         return;
@@ -56,6 +58,11 @@ public class App {
         }
     }
 
+    /**
+     * Creacion de un Cliente con ID generado automáticamente.
+     * * El ID se genera en el formato "CL001", "CL002", etc.
+     * * Se solicita el nombre y correo del cliente con el requisito de que el correo tenga un @ en su formato
+     */
     private static void agregarCliente() {
         System.out.println("\n--- AGREGAR CLIENTE ---");
         String id = String.format("CL%03d", contadorClientes);
@@ -76,17 +83,37 @@ public class App {
         }
     }
 
-    private static void listarClientes() {
-        if (clienteRepo.listar().isEmpty()) {
+    /**
+     * Listar todos los clientes registrados.
+     * Si no hay clientes, se muestra un mensaje indicando que no hay registros.
+     */
+   private static void listarClientes() {
+        List<Cliente> clientes = clienteRepo.listar();
+
+        if (clientes.isEmpty()) {
             System.out.println("No hay clientes registrados.");
             return;
         }
-        System.out.println("Lista de clientes:");
-        for (Cliente c : clienteRepo.listar()) {
-            System.out.println(c.getResumen() + "\n");
+
+        System.out.println("\n--- Lista de Clientes ---");
+        System.out.printf("%-6s %-15s %-25s %-8s %-10s %-8s%n", 
+            "ID", "Nombre", "Correo", "Puntos", "Nivel", "Streak");
+        System.out.println("--------------------------------------------------------------------------");
+
+        for (Cliente c : clientes) {
+            System.out.printf("%-6s %-15s %-25s %-8d %-10s %-8d%n", 
+                c.getId(), 
+                c.getNombre(), 
+                c.getCorreo(), 
+                c.getPuntos(), 
+                c.getNivel(), 
+                c.getStreakDias());
         }
     }
 
+    /**
+     * Actualizar la información de un cliente existente.
+     */
     private static void actualizarCliente() {
         System.out.print("Ingrese ID del cliente a actualizar: ");
         String id = scanner.nextLine();
@@ -109,11 +136,15 @@ public class App {
         }
     }
 
+    /**
+     * Eliminar un cliente y todas sus compras asociadas.
+     * Se solicita el ID del cliente a eliminar.
+     * Si el cliente no existe, se muestra un mensaje de error.
+     */
     private static void eliminarCliente() {
         System.out.print("ID del cliente a eliminar: ");
         String id = scanner.nextLine().trim();
 
-        
         try {
             clienteRepo.buscarPorId(id);
         } catch (IllegalArgumentException e) {
@@ -130,6 +161,12 @@ public class App {
         System.out.println("Cliente y todas sus compras eliminadas correctamente.");
     }
 
+    /**
+     * Registrar una nueva compra para un cliente existente.
+     * * Se solicita el ID del cliente, el monto de la compra y la fecha en formato DD-MM-AAAA.
+     * * El ID de la compra se genera automáticamente en el formato "CO001", "CO002", etc.
+     * * Si el cliente no existe o los datos son inválidos, se muestra un mensaje de error.
+     */
     private static void registrarCompra() {
         System.out.println("\n--- REGISTRO DE COMPRA ---");
         System.out.print("Ingrese el ID del cliente: ");
@@ -175,6 +212,10 @@ public class App {
         System.out.println("Compra registrada correctamente con ID: " + idCompra);
     }
 
+    /**
+     * Mostrar el historial de compras de todos los clientes.
+     * Si no hay compras registradas, se muestra un mensaje indicando que no hay registros.
+     */
     private static void mostrarHistorialCompras() {
         List<Compra> compras = compraRepo.listarTodas();
 
@@ -197,6 +238,11 @@ public class App {
         }
     }
 
+    /**
+     * Mostrar el historial de compras de un cliente específico.
+     * Se solicita el ID del cliente y se muestra su historial de compras.
+     * Si el cliente no tiene compras registradas, se muestra un mensaje indicando que no hay registros.
+     */
     private static void mostrarHistorialComprasPorCliente() {
         System.out.print("Ingrese el ID del cliente: ");
         String idCliente = scanner.nextLine().trim();
@@ -228,6 +274,13 @@ public class App {
         }
     }
 
+    /**
+     * Actualizar la información de una compra existente.
+     * Se solicita el ID de la compra, el nuevo monto, la nueva fecha y si se desea cambiar el cliente asociado.
+     * Si la compra no existe o los datos son inválidos, se muestra un mensaje de error.
+     * Si se cambia el cliente, debe actualizarse el historial de compras del cliente original y del nuevo cliente.
+     * Si el cliente asociado a la compra ya no existe, se muestra un mensaje de error.
+     */
     private static void actualizarCompra() {
         System.out.print("Ingrese el ID de la compra a actualizar: ");
         String idCompra = scanner.nextLine().trim();
@@ -287,6 +340,13 @@ public class App {
         System.out.println("Compra actualizada correctamente.");
     }
 
+    /**
+     * Eliminar una compra existente.
+     * Se solicita el ID de la compra a eliminar.
+     * Si la compra no existe, se muestra un mensaje de error.
+     * Si el cliente asociado a la compra ya no existe, se muestra un mensaje de error.
+     * Si se elimina la compra, se actualiza el historial de compras del cliente asociado.
+     */
     private static void eliminarCompra() {
         System.out.print("Ingrese el ID de la compra a eliminar: ");
         String idCompra = scanner.nextLine().trim();
@@ -320,6 +380,27 @@ public class App {
         }
 
         System.out.println("Compra eliminada correctamente.");
+    }
+
+    /**
+     * Mostrar un resumen de un cliente específico por su ID.
+     * Se solicita el ID del cliente y se muestra su información.
+     * Si el cliente no existe, se muestra un mensaje de error.
+     */
+    private static void mostrarResumenClientePorId() {
+        System.out.print("Ingrese el ID del cliente: ");
+        String id = scanner.nextLine().trim();
+
+        Cliente cliente;
+        try {
+            cliente = clienteRepo.buscarPorId(id);
+        } catch (IllegalArgumentException e) {
+            System.out.println("Error: " + e.getMessage());
+            return;
+        }
+
+        System.out.println("\n--- Información del Cliente ---");
+        System.out.println(cliente.getResumen());
     }
 
 

@@ -38,6 +38,11 @@ public class Cliente {
         this.streakDias = 0;
     }
 
+
+    /**
+     * Validar el formato del correo electrónico.
+     * Se requiere que el correo contenga un "@" en su formato.
+     */
     private void validarCorreo(String correo) {
         if (!correo.contains("@")) {
             throw new IllegalArgumentException("Correo inválido");
@@ -68,6 +73,9 @@ public class Cliente {
         return streakDias;
     }
 
+    /**
+     * Obtener un resumen de la información del cliente.
+     */
     public String getResumen() {
         return String.format(
             "Cliente %s: %s - %s\nNivel: %s\nPuntos: %d\nStreak: %d días",
@@ -75,6 +83,10 @@ public class Cliente {
         );
     }
 
+    /**
+     * Agregar una compra al historial del cliente.
+     * Se actualizan los puntos, el nivel y la racha de días.
+     */
     public void agregarCompra(Compra compra) {
         historialCompras.add(compra);
         sumarPuntos(compra);
@@ -82,10 +94,16 @@ public class Cliente {
         actualizarStreak();
     }
 
+    /**
+     * Obtener el historial de compras del cliente.
+     */
     public List<Compra> getHistorialCompras() {
         return historialCompras;
     }
 
+    /**
+     * Sumar puntos al cliente por una compra.
+     */
     private void sumarPuntos(Compra compra) {
         int puntosGanados = compra.calcularPuntosTotales(nivel.name().toLowerCase());
         this.puntos += puntosGanados;
@@ -95,6 +113,10 @@ public class Cliente {
         this.puntos = puntos;
     }
 
+    /**
+     * Calcular el nivel de fidelidad del cliente basado en los puntos acumulados.
+     * Se actualiza el nivel del cliente según las reglas definidas.
+     */
     public void calcularNivel() {
         int puntosValidos = Math.max(0, puntos);
         for (NivelRegla regla : REGLAS_NIVELES) {
@@ -105,6 +127,12 @@ public class Cliente {
         }
     }
 
+
+    /**
+     * Actualizar la racha de días del cliente.
+     * La racha se calcula como la cantidad de días consecutivos con compras.
+     * Se considera que una racha comienza desde el día más reciente de compra
+     */
     private void actualizarStreak() {
         // Obtener fechas únicas de compra ordenadas de más reciente a más antigua
         List<LocalDate> fechas = historialCompras.stream()
@@ -127,6 +155,10 @@ public class Cliente {
         this.streakDias = racha;
     }
 
+    /**
+     * Eliminar una compra del historial del cliente.
+     * Se actualizan los puntos, el nivel y la racha de días.
+     */
     public void eliminarCompra(String idCompra) {
         boolean eliminada = historialCompras.removeIf(c -> c.getIdCompra().equals(idCompra));
 
@@ -139,6 +171,9 @@ public class Cliente {
         actualizarStreak();
     }
 
+    /**
+     * Recalcular los puntos del cliente basados en su historial de compras.
+     */
     private void recalcularPuntos() {
         this.puntos = historialCompras.stream()
             .mapToInt(c -> c.calcularPuntosTotales(nivel.name()))
