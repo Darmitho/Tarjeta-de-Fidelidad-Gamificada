@@ -187,4 +187,15 @@ public class CompraRepositoryTest {
         assertEquals(4, puntosTotalesCuartaCompra); // solo 4 puntos ya que no aplica bonus
     }
 
+    @Test
+    void obtenerCompraPorID_debeRetornarCompraExistente() {
+        CompraRepository repo = new CompraRepository();
+        Compra compra = new Compra("C001", "CL01", 100.0, LocalDateTime.now());
+        repo.registrar(compra);
+
+        Compra compraEncontrada = repo.buscarPorId("C001");
+        assertNotNull(compraEncontrada);
+        assertEquals("C001", compraEncontrada.getIdCompra());
+    }
+
 }
