@@ -39,10 +39,14 @@ public class ClienteRepository {
     }
 
     public void eliminar(String id) {
+        if (id == null || id.isBlank()) {
+            throw new IllegalArgumentException("ID no puede ser nulo o vacío");
+        }
         if (!clientes.containsKey(id)) {
             throw new IllegalArgumentException("No existe cliente con ID: " + id);
         }
         clientes.remove(id);
     }
+
 
 }
