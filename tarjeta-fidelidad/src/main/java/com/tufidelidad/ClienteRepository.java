@@ -22,8 +22,12 @@ public class ClienteRepository {
 
 
     public Cliente buscarPorId(String id) {
-        return clientes.get(id);
+    if (!clientes.containsKey(id)) {
+        throw new IllegalArgumentException("No existe cliente con ID: " + id);
     }
+    return clientes.get(id);
+}
+
 
     public void actualizar(Cliente cliente) {
         Objects.requireNonNull(cliente, "El cliente no puede ser null");
@@ -32,6 +36,13 @@ public class ClienteRepository {
             throw new IllegalArgumentException("No existe cliente con ID: " + id);
         }
         clientes.put(id, cliente);
+    }
+
+    public void eliminar(String id) {
+        if (!clientes.containsKey(id)) {
+            throw new IllegalArgumentException("No existe cliente con ID: " + id);
+        }
+        clientes.remove(id);
     }
 
 }
