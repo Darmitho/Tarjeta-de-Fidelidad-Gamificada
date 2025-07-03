@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 class ClienteRepositoryTest {
 
@@ -157,4 +156,25 @@ class ClienteRepositoryTest {
         assertEquals("No existe cliente con ID: null", e_null.getMessage());
     }
 
+    @Test
+    void eliminarConIdNuloOVacioDebeLanzarExcepcion() {
+        ClienteRepository repo = new ClienteRepository();
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            repo.eliminar(null);
+        });
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            repo.eliminar("   ");
+        });
+    }
+
+    @Test
+    void eliminarConIdNoExistenteDebeLanzarExcepcion() {
+        ClienteRepository repo = new ClienteRepository();
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            repo.eliminar("C000");
+        });
+    }
 }

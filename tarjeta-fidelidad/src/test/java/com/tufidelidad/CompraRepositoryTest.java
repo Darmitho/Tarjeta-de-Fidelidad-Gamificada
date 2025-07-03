@@ -294,4 +294,13 @@ public class CompraRepositoryTest {
         });
     }
 
+    @Test
+    void buscarPorIdConNullDebeLanzarExcepcion() {
+        CompraRepository repo = new CompraRepository();
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            repo.buscarPorId(null);
+        });
+    }
+
 }
