@@ -2,6 +2,7 @@ package com.tufidelidad;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Collections;
 
 public class CompraRepository {
@@ -70,8 +71,9 @@ public class CompraRepository {
         if (idCompra == null) {
             throw new IllegalArgumentException("El ID de compra no puede ser null");
         }
+
         return compras.stream()
-                .filter(c -> c.getIdCompra().equals(idCompra))
+                .filter(c -> idCompra.equals(c.getIdCompra()))
                 .findFirst()
                 .orElse(null);
     }
