@@ -47,16 +47,29 @@ public class Compra {
         this.bonus = bonus;
     }
 
+    /**
+     * Calcula los puntos base de la compra.
+     * @return Puntos base
+     */
     public int calcularPuntosBase() {
         return (int) (monto / PUNTOS_POR_CADA_X_MONTO);
     }
 
+    /**
+     * Calcula los puntos totales de la compra considerando el nivel del cliente.
+     * @param nivelCliente Nivel de fidelidad del cliente
+     * @return Puntos totales
+     */
     public int calcularPuntosTotales(String nivelCliente) {
         int puntosBase = calcularPuntosBase();
         double multiplicador = obtenerMultiplicador(nivelCliente);
         return (int) (puntosBase * multiplicador) + bonus;
     }
-
+    /**
+     * Obtiene el multiplicador de puntos según el nivel del cliente.
+     * @param nivelCliente Nivel de fidelidad del cliente
+     * @return Multiplicador de puntos
+     */
     private double obtenerMultiplicador(String nivelCliente) {
         return MULTIPLICADORES.getOrDefault(nivelCliente.toLowerCase(), 1.0);
     }
