@@ -60,4 +60,15 @@ class ClienteRepositoryTest {
         assertEquals("No existe cliente con ID: 999", e.getMessage());
     }
 
+    @Test
+    public void eliminarClienteExistenteDebeRemoverloDelRepositorio() {
+        ClienteRepository repositorio = new ClienteRepository();
+        Cliente cliente = new Cliente("123", "Daniel", "daniel@email.com");
+        repositorio.agregar(cliente);
+
+        repositorio.eliminar("123");
+
+        assertThrows(IllegalArgumentException.class, () -> repositorio.buscarPorId("123"));
+    }
+
 }
