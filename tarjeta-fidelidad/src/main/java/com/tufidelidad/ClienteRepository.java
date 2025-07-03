@@ -1,6 +1,7 @@
 package com.tufidelidad;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,8 +52,9 @@ public class ClienteRepository {
     }
 
     public List<Cliente> listar() {
+        if (clientes.isEmpty()) {
+            return Collections.emptyList();
+        }
         return new ArrayList<>(clientes.values());
     }
-
-
 }
