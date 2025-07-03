@@ -23,4 +23,12 @@ public class ClienteRepository {
     public Cliente buscarPorId(String id) {
         return clientes.get(id);
     }
+
+    public void actualizar(Cliente cliente) {
+    if (!clientes.containsKey(cliente.getId())) {
+        throw new IllegalArgumentException("No existe cliente con ID: " + cliente.getId());
+    }
+    clientes.put(cliente.getId(), cliente);
+}
+
 }
