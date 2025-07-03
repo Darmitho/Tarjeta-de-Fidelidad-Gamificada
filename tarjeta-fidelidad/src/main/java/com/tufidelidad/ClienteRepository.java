@@ -1,6 +1,8 @@
 package com.tufidelidad;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -46,6 +48,10 @@ public class ClienteRepository {
             throw new IllegalArgumentException("No existe cliente con ID: " + id);
         }
         clientes.remove(id);
+    }
+
+    public List<Cliente> listar() {
+        return new ArrayList<>(clientes.values());
     }
 
 
