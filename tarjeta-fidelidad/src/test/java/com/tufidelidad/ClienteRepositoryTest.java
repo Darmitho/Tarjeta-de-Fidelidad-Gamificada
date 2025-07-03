@@ -37,4 +37,27 @@ class ClienteRepositoryTest {
         assertEquals("Cliente no puede ser null", e.getMessage());
     }
 
+    @Test
+    void actualizarClienteExistente_deberiaActualizarDatos() {
+        ClienteRepository repo = new ClienteRepository();
+        Cliente cliente = new Cliente("1", "Luis", "luis@mail.com");
+        repo.agregar(cliente);
+
+        Cliente actualizado = new Cliente("1", "Luis Renovado", "nuevo@mail.com");
+        repo.actualizar(actualizado);
+
+        Cliente resultado = repo.buscarPorId("1");
+        assertEquals("Luis Renovado", resultado.getNombre());
+        assertEquals("nuevo@mail.com", resultado.getCorreo());
+    }
+
+    @Test
+    void actualizarClienteInexistente_deberiaLanzarExcepcion() {
+        ClienteRepository repo = new ClienteRepository();
+        Cliente cliente = new Cliente("999", "Fantasma", "ghost@mail.com");
+
+        Exception e = assertThrows(IllegalArgumentException.class, () -> repo.actualizar(cliente));
+        assertEquals("No existe cliente con ID: 999", e.getMessage());
+    }
+
 }
