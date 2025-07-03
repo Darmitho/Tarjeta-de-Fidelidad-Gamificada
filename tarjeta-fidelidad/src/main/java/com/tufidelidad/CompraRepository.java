@@ -66,4 +66,13 @@ public class CompraRepository {
         return comprasMismoDia == 3; // Esta es la tercera compra del día
     }
 
+    public Compra buscarPorId(String idCompra) {
+        if (idCompra == null) {
+            throw new IllegalArgumentException("El ID de compra no puede ser null");
+        }
+        return compras.stream()
+                .filter(c -> c.getIdCompra().equals(idCompra))
+                .findFirst()
+                .orElse(null);
+    }
 }
