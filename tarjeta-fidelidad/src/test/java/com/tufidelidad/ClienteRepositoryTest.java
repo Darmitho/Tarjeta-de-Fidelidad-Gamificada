@@ -3,6 +3,8 @@ package com.tufidelidad;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.List;
+
 class ClienteRepositoryTest {
 
     @Test
@@ -70,5 +72,23 @@ class ClienteRepositoryTest {
 
         assertThrows(IllegalArgumentException.class, () -> repositorio.buscarPorId("123"));
     }
+
+    @Test
+    public void listarDebeRetornarTodosLosClientesAgregados() {
+        ClienteRepository repo = new ClienteRepository();
+
+        Cliente cliente1 = new Cliente("1", "Ana", "ana@mail.com");
+        Cliente cliente2 = new Cliente("2", "Luis", "luis@mail.com");
+
+        repo.agregar(cliente1);
+        repo.agregar(cliente2);
+
+        List<Cliente> resultado = repo.listar();
+
+        assertEquals(2, resultado.size());
+        assertTrue(resultado.contains(cliente1));
+        assertTrue(resultado.contains(cliente2));
+    }
+
 
 }
