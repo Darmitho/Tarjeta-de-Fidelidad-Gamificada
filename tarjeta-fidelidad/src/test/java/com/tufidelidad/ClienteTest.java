@@ -124,5 +124,26 @@ public class ClienteTest {
         assertEquals(500, cliente.getPuntos());
     }
 
+    @Test 
+    void actualizarStreak_conComprasEnDiasNoConsecutivos() {
+        Cliente cliente = new Cliente("CL1", "Carlos", "carlos@mail.com");
 
+        cliente.agregarCompra(new Compra("C1", "CL1", 100, LocalDateTime.of(2025, 7, 2, 9, 0)));
+        cliente.agregarCompra(new Compra("C2", "CL1", 200, LocalDateTime.of(2025, 7, 1, 10, 0)));
+        cliente.agregarCompra(new Compra("C3", "CL1", 300, LocalDateTime.of(2025, 6, 29, 11, 0)));
+
+        assertEquals(2, cliente.getStreakDias());
+    }
+
+    @Test
+    void actualizarStreak_sinOrdenDeComprasAgregado() {
+        Cliente cliente = new Cliente("CL1", "Sofía", "sofia@mail.com");
+
+        cliente.agregarCompra(new Compra("C1", "CL1", 100, LocalDateTime.of(2025, 4, 1, 9, 0)));
+        cliente.agregarCompra(new Compra("C2", "CL1", 200, LocalDateTime.of(2025, 4, 2, 10, 0)));
+        cliente.agregarCompra(new Compra("C1", "CL1", 100, LocalDateTime.of(2025, 4, 4, 9, 0)));
+        cliente.agregarCompra(new Compra("C2", "CL1", 200, LocalDateTime.of(2025, 4, 3, 10, 0)));
+
+        assertEquals(4, cliente.getStreakDias());
+    }
 }
