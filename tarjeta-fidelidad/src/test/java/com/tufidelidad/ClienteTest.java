@@ -146,4 +146,27 @@ public class ClienteTest {
 
         assertEquals(4, cliente.getStreakDias());
     }
+
+    @Test
+    void eliminarCompra_debeActualizarHistorialPuntosNivelYStreak() {
+        Cliente cliente = new Cliente("CL1", "Pedro", "pedro@mail.com");
+
+        // Agregamos una compra que genera 2 puntos base * 1.0 (Bronce)
+        Compra compra = new Compra("C1", "CL1", 250, LocalDateTime.of(2025, 7, 2, 9, 0));
+        cliente.agregarCompra(compra);
+
+        assertEquals(2, cliente.getPuntos());
+        assertEquals(NivelFidelidad.BRONCE, cliente.getNivel());
+        assertEquals(1, cliente.getStreakDias());
+
+        // Eliminamos la compra
+        cliente.eliminarCompra("C1");
+
+        // Luego de eliminar: puntos, racha, historial, nivel deben actualizarse
+        assertEquals(0, cliente.getPuntos(), "Los puntos deben resetearse a 0");
+        assertEquals(0, cliente.getStreakDias(), "La racha debe ser 0 al eliminar la única compra");
+        assertEquals(NivelFidelidad.BRONCE, cliente.getNivel(), "El nivel debe volver a Bronce");
+        assertTrue(cliente.getHistorialCompras().isEmpty(), "El historial de compras debe estar vacío");
+    }
+
 }
