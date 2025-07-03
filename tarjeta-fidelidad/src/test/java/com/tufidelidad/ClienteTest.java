@@ -123,6 +123,4 @@ public class ClienteTest {
         assertEquals(NivelFidelidad.PLATA, cliente.getNivel());
         assertEquals(500, cliente.getPuntos());
     }
-
-
 }
