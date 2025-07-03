@@ -127,4 +127,29 @@ public class Cliente {
 
         this.streakDias = racha;
     }
+
+    public void eliminarCompra(String idCompra) {
+        boolean eliminada = historialCompras.removeIf(c -> c.getIdCompra().equals(idCompra));
+
+        if (eliminada) {
+            // Recalcular puntos
+            this.puntos = historialCompras.stream()
+                .mapToInt(c -> c.calcularPuntosTotales(this.nivel.name()))
+                .sum();
+
+            // Recalcular nivel
+            calcularNivel();
+
+            // Recalcular streak
+            if (historialCompras.isEmpty()) {
+                this.streakDias = 0;
+            } else {
+                Compra masReciente = historialCompras.stream()
+                    .max(Comparator.comparing(Compra::getFecha))
+                    .orElseThrow();
+
+                actualizarStreak();
+            }
+        }
+    }
 }
