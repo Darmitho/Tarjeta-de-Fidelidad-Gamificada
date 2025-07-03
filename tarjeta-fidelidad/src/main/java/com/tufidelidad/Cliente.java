@@ -1,8 +1,22 @@
 package com.tufidelidad;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class Cliente {
+
+    private record NivelRegla(int umbral, NivelFidelidad nivel) {}
+    
+    private static final List<NivelRegla> REGLAS_NIVELES = List.of(
+        new NivelRegla(3000, NivelFidelidad.PLATINO),
+        new NivelRegla(1500, NivelFidelidad.ORO),
+        new NivelRegla(500, NivelFidelidad.PLATA),
+        new NivelRegla(0, NivelFidelidad.BRONCE)
+    );
 
     private final String id;
     private final String nombre;
@@ -10,6 +24,7 @@ public class Cliente {
     private int puntos;
     private NivelFidelidad nivel;
     private int streakDias;
+    private final List<Compra> historialCompras = new ArrayList<>();
 
     public Cliente(String id, String nombre, String correo) {
         this.id = Objects.requireNonNull(id, "ID no puede ser null");
@@ -53,15 +68,57 @@ public class Cliente {
         return streakDias;
     }
 
-    @Override
-    public String toString() {
-        return "Cliente{" +
-                "id='" + id + '\'' +
-                ", nombre='" + nombre + '\'' +
-                ", correo='" + correo + '\'' +
-                ", puntos=" + puntos +
-                ", nivel=" + nivel +
-                ", streakDias=" + streakDias +
-                '}';
+    public String getResumen() {
+        return String.format(
+            "Cliente %s: %s - %s\nNivel: %s\nPuntos: %d\nStreak: %d días",
+            id, nombre, correo, nivel, puntos, streakDias
+        );
+    }
+
+    public void agregarCompra(Compra compra) {
+        historialCompras.add(compra);
+        sumarPuntos(compra);
+        calcularNivel();
+        actualizarStreak(compra);
+    }
+
+    public List<Compra> getHistorialCompras() {
+        return historialCompras;
+    }
+
+    private void sumarPuntos(Compra compra) {
+        int puntosGanados = compra.calcularPuntosTotales(nivel.name().toLowerCase());
+        this.puntos += puntosGanados;
+    }
+
+    void setPuntos(int puntos) {
+        this.puntos = puntos;
+    }
+
+    public void calcularNivel() {
+        int puntosValidos = Math.max(0, puntos);
+        for (NivelRegla regla : REGLAS_NIVELES) {
+            if (puntosValidos >= regla.umbral()) {
+                nivel = regla.nivel();
+                return;
+            }
+        }
+    }
+
+    private void actualizarStreak(Compra compraReciente) {
+        this.streakDias = calcularStreakDesde(compraReciente.getFecha().toLocalDate());
+    }
+
+    private int calcularStreakDesde(LocalDate referencia) {
+        Set<LocalDate> diasCompra = historialCompras.stream()
+            .map(compra -> compra.getFecha().toLocalDate())
+            .collect(Collectors.toSet());
+
+        int racha = 0;
+        while (diasCompra.contains(referencia.minusDays(racha))) {
+            racha++;
+        }
+
+        return racha;
     }
 }
